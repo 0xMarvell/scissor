@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  api:
+    build: . #search for Dockerfile
+    container_name: scissor-api
+    volumes:
+      - .:/go/src/scissor
+    ports:
+      - "8080:8080"
+    networks:
+      - go_scissor
+
+  db:
+    image: postgres
+    restart: unless-stopped
+    container_name: scissor-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: scissor
+    ports:
+      - '5431:5432'
+    volumes: 
+      - /private/var/lib/postgresql:/var/lib/postgresql
+    networks:
+      - go_scissor
+
+networks:
+  go_scissor:
+    external: true
