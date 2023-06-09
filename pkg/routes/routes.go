@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterUserRoutes handles all routing for the API
+// RegisterRoutes handles all routing for the API
 func RegisterRoutes(r *gin.Engine) {
 	// Index page...a simple greeting
 	r.GET("/", controllers.SayHello) // won't require authentication
