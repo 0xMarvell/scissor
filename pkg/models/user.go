@@ -1,10 +1,12 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
-	Username string `json:"user_name" gorm:"unique"`
+	Username string `json:"username" gorm:"unique"`
 	Password string `json:"-"`
-	URLs     []URL  `gorm:"foreignKey:UserID" json:"urls"`
+	URLs     []URL  `json:"urls"`
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -15,12 +16,12 @@ const JWT_SECRET = "secret"
 
 // Signup allows a user to register new account with the expected user details
 func Signup(c *gin.Context) {
-	// Get name, email, password off request body
+	// Get username, password off request body
 	var signupPayload struct {
-		Username string `json:"user_name"`
+		Username string `json:"username"`
 		Password string `json:"password"`
 	}
-	if c.Bind(&signupPayload) != nil {
+	if err := c.Bind(&signupPayload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read request body",
 		})
@@ -42,20 +43,22 @@ func Signup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create user: an account with that username already exists",
 		})
+		log.Println(result.Error)
 		return
 	}
 	// Return JSON response to confirm successful creation of user
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
+		"user":    user,
 		"message": "New user was successfully created. Proceed to login",
 	})
 }
 
 // Login allows existing user to login to the API
 func Login(c *gin.Context) {
-	// Get needed details (email,password) off request body
+	// Get needed details (username,password) off request body
 	var loginPayload struct {
-		Username string `json:"user_name"`
+		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 
@@ -120,7 +123,7 @@ func Login(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	// Remove the cookie by setting its expiration time to a past value
+	// Remove the cookie containing the JWT authorization token by setting its expiration time to a past value
 	var secure, httpOnly bool = false, true
 	c.SetCookie("auth_token", "", -1, "", "", secure, httpOnly)
 
@@ -130,8 +133,31 @@ func Logout(c *gin.Context) {
 	})
 }
 
-// GetUSerDetails retireves an existing user's account details
-func GetUserDetails(c *gin.Context) {
+// GetUSers retireves all existing users
+func GetUsers(c *gin.Context) {
+	// Retireve all user objects from database
+	var users []models.User
+	config.DB.Find(&users)
+
+	// Get count of users in database
+	var count int64
+	result := config.DB.Model(&models.User{}).Count(&count)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to get count",
+		})
+		return
+	}
+	// Return user details as JSON response
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"count":   count,
+		"users":   users,
+	})
+}
+
+// GetUSer retireves an existing user's account details
+func GetUser(c *gin.Context) {
 	// Retireve user details attached to request after passing through middleware
 	user, _ := c.Get("user")
 	// Return user details as JSON response

@@ -8,21 +8,30 @@ import (
 
 // RegisterUserRoutes handles all routing for the API
 func RegisterRoutes(r *gin.Engine) {
+	// Index page...a simple greeting
+	r.GET("/", controllers.SayHello) // won't require authentication
+
 	// Authentication routes
-	auth := r.Group("/api/v1/user")
+	auth := r.Group("/api/v1")
 	{
 		auth.POST("/signup", controllers.Signup)
 		auth.POST("/login", controllers.Login)
 		auth.GET("/logout", controllers.Logout)
-		auth.GET("/details", middleware.RequireAuth, controllers.GetUserDetails)
 	}
 
-	r.GET("/", middleware.RequireAuth, controllers.SayHello)
+	// User routes
+	users := r.Group("/api/v1/users")
+	{
+		users.GET("", controllers.GetUsers) // won't require authentication
+		users.GET("/profile", middleware.RequireAuth, controllers.GetUser)
+	}
 
 	// URL shortener routes
-	// shortener := r.Group("api/v1/shortener")
-	// {
-
-	// }
+	shortener := r.Group("api/v1/shortener")
+	{
+		shortener.POST("/urls", controllers.GetURLs)
+		shortener.POST("/shorten", middleware.RequireAuth, controllers.Shorten)
+		shortener.GET("/redirect", middleware.RequireAuth, controllers.Redirect)
+	}
 
 }
