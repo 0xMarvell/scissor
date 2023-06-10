@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/0xMarvell/scissor/pkg/config"
@@ -54,6 +55,11 @@ func RequireAuth(c *gin.Context) {
 		}
 		// Attach user to the request
 		c.Set("user", user)
+		// Store user id (for use in subsequent operations when necessary)
+		// in seperate variable and attach to request
+		userID := strconv.Itoa(int(user.ID))
+		// Pass the user ID to the next handlers
+		c.Set("userID", userID)
 		// Authorize user and continue
 		c.Next() // this sends the request from the middleware to the expected controller
 	} else {

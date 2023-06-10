@@ -29,9 +29,10 @@ func RegisterRoutes(r *gin.Engine) {
 	// URL shortener routes
 	shortener := r.Group("api/v1/shortener")
 	{
-		shortener.POST("/urls", controllers.GetURLs)
+		shortener.GET("/urls", middleware.RequireAuth, controllers.GetURLs)
+		shortener.DELETE("/url/:urlID", middleware.RequireAuth, controllers.DeleteURL)
 		shortener.POST("/shorten", middleware.RequireAuth, controllers.Shorten)
-		shortener.GET("/redirect", middleware.RequireAuth, controllers.Redirect)
+		shortener.GET("/redirect/:shortURL", middleware.RequireAuth, controllers.Redirect)
 	}
 
 }

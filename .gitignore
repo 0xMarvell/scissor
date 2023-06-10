@@ -25,5 +25,8 @@
 go.work
 
 # binary
-/cmd/bin/scissor
 cmd/web/bin/scissor
+
+# psql data
+# db-data/
+

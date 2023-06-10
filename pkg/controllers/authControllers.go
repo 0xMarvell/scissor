@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm/clause"
 )
 
 const JWT_SECRET = "secret"
@@ -38,7 +39,7 @@ func Signup(c *gin.Context) {
 	}
 	// Create user object using GORM
 	user := models.User{Username: signupPayload.Username, Password: string(hash)}
-	result := config.DB.Create(&user)
+	result := config.DB.Preload(clause.Associations).Create(&user)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create user: an account with that username already exists",
@@ -122,8 +123,10 @@ func Login(c *gin.Context) {
 	})
 }
 
+// Logout logs out the curret logged-in user
 func Logout(c *gin.Context) {
-	// Remove the cookie containing the JWT authorization token by setting its expiration time to a past value
+	// Remove the cookie containing the JWT authorization token
+	//by setting its expiration time to a past value
 	var secure, httpOnly bool = false, true
 	c.SetCookie("auth_token", "", -1, "", "", secure, httpOnly)
 
@@ -133,7 +136,7 @@ func Logout(c *gin.Context) {
 	})
 }
 
-// GetUSers retireves all existing users
+// GetUsers retireves all existing users
 func GetUsers(c *gin.Context) {
 	// Retireve all user objects from database
 	var users []models.User
