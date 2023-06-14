@@ -79,7 +79,7 @@ func Redirect(c *gin.Context) {
 // GetURLs retrieves all existing urls
 // for the logged in user
 func GetURLs(c *gin.Context) {
-	// Retireve all user objects from database
+	// Retrieve all user objects from database
 	userID, _ := c.Get("userID")
 	var urls []models.URL
 	config.DB.Where("user_id = ?", userID).Find(&urls)

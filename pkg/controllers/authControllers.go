@@ -135,9 +135,9 @@ func Logout(c *gin.Context) {
 	})
 }
 
-// GetUsers retireves all existing users
+// GetUsers retrieves all existing users
 func GetUsers(c *gin.Context) {
-	// Retireve all user objects from database
+	// Retrieve all user objects from database
 	var users []models.User
 	config.DB.Preload("URLs").Find(&users)
 
@@ -158,9 +158,9 @@ func GetUsers(c *gin.Context) {
 	})
 }
 
-// GetUSer retireves an existing user's account details
+// GetUSer retrieves an existing user's account details
 func GetUser(c *gin.Context) {
-	// Retireve user details attached to request after passing through middleware
+	// Retrieve user details attached to request after passing through middleware
 	user, _ := c.Get("user")
 	// Return user details as JSON response
 	c.JSON(http.StatusOK, gin.H{
