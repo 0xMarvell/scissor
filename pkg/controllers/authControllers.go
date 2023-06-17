@@ -14,7 +14,14 @@ import (
 
 const JWT_SECRET = "secret"
 
-// Signup allows a user to register new account with the expected user details
+// @Summary Create a new user
+// @Description Create a new user with the provided details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 201 {object} models.User
+// @Failure 400 {object} string
+// @Router /api/v1/signup [post]
 func Signup(c *gin.Context) {
 	// Get username, password off request body
 	var signupPayload struct {
@@ -55,6 +62,15 @@ func Signup(c *gin.Context) {
 }
 
 // Login allows existing user to login to the API
+//
+// @Summary Login to user account
+// @Description Login with user details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Router /api/v1/login [post]
 func Login(c *gin.Context) {
 	// Get needed details (username,password) off request body
 	var loginPayload struct {
@@ -123,6 +139,15 @@ func Login(c *gin.Context) {
 }
 
 // Logout logs out the curret logged-in user
+//
+// @Summary Logout of user account
+// @Description Logout of user account
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 201 {object} string
+// @Failure 400 {object} string
+// @Router /api/v1/logout [get]
 func Logout(c *gin.Context) {
 	// Remove the cookie containing the JWT authorization token
 	//by setting its expiration time to a past value
@@ -136,6 +161,14 @@ func Logout(c *gin.Context) {
 }
 
 // GetUsers retrieves all existing users
+//
+// @Summary Get all users
+// @Description Retrieve all existing user accounts
+// @Tags users
+// @Produce json
+// @Success 200 {object} models.User
+// @Failure 404 {object} string
+// @Router /api/v1/users [get]
 func GetUsers(c *gin.Context) {
 	// Retrieve all user objects from database
 	var users []models.User
@@ -158,7 +191,15 @@ func GetUsers(c *gin.Context) {
 	})
 }
 
-// GetUSer retrieves an existing user's account details
+// GetUser retrieves an existing user's account details
+//
+// @Summary Get a user by ID
+// @Description Retrieve an existing user
+// @Tags users
+// @Produce json
+// @Success 200 {object} models.User
+// @Failure 404 {object} string
+// @Router /api/v1/users/profile [get]
 func GetUser(c *gin.Context) {
 	// Retrieve user details attached to request after passing through middleware
 	user, _ := c.Get("user")

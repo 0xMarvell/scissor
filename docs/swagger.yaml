@@ -1,0 +1,258 @@
+basePath: /api/v1
+definitions:
+  github_com_0xMarvell_scissor_pkg_models.URL:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      original_url:
+        description: |-
+          The url to be shortened
+
+          required: true
+          example: https://google.com/
+        type: string
+      shortened_url:
+        description: |-
+          The shortened version of the original url
+
+          required: false
+          unique: true
+          example: djna7L
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        description: |-
+          The user ID of the user that created the shortened url
+
+          example: 1
+        type: integer
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      urls:
+        description: |-
+          The urls created by the user
+
+          required: false
+          example: password123
+        items:
+          $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.URL'
+        type: array
+      username:
+        description: |-
+          The username of the user
+
+          required: true
+          unique: true
+          example: john_doe
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Shorten urls for users
+  title: Scissor API
+  version: "1.0"
+paths:
+  /api/v1:
+    get:
+      description: Simple greeting on index page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Say hello
+      tags:
+      - urls
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with user details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Login to user account
+      tags:
+      - users
+  /api/v1/logout:
+    get:
+      consumes:
+      - application/json
+      description: Logout of user account
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Logout of user account
+      tags:
+      - users
+  /api/v1/shortener/redirect/{shortURL}:
+    get:
+      description: Redirect short url to original url
+      produces:
+      - application/json
+      responses:
+        "301":
+          description: Moved Permanently
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Redirect short url
+      tags:
+      - urls
+  /api/v1/shortener/shorten:
+    post:
+      consumes:
+      - application/json
+      description: Get original url and created a shortened version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Shorten url
+      tags:
+      - urls
+  /api/v1/shortener/url/{urlID}:
+    delete:
+      description: Delete a url by its ID
+      parameters:
+      - description: Url ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Delete a url
+      tags:
+      - urls
+  /api/v1/shortener/urls:
+    get:
+      description: Retrieve all shortened urls created by each user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.URL'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get all shortened urls created by user
+      tags:
+      - urls
+  /api/v1/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided details
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - users
+  /api/v1/users:
+    get:
+      description: Retrieve all existing user accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get all users
+      tags:
+      - users
+  /api/v1/users/profile:
+    get:
+      description: Retrieve an existing user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get a user by ID
+      tags:
+      - users
+swagger: "2.0"

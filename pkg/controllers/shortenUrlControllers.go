@@ -12,6 +12,13 @@ import (
 )
 
 // SayHello displays a simple greeting on the index page of the API
+// @Summary Say hello
+// @Description Simple greeting on index page
+// @Tags urls
+// @Produce json
+// @Success 200 {object} string
+// @Failure 404 {object} string
+// @Router /api/v1 [get]
 func SayHello(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "Hello and welcome to scissor! shorten urls with ease!",
@@ -19,6 +26,15 @@ func SayHello(c *gin.Context) {
 }
 
 // Shorten takes the original url and shortens it
+//
+// @Summary Shorten url
+// @Description Get original url and created a shortened version
+// @Tags urls
+// @Accept json
+// @Produce json
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Router /api/v1/shortener/shorten [post]
 func Shorten(c *gin.Context) {
 	var urlPayload struct {
 		URL string `json:"url"`
@@ -61,6 +77,14 @@ func Shorten(c *gin.Context) {
 
 // Redirect takes the shortened URL and
 // redirects the user the the original URL
+//
+// @Summary Redirect short url
+// @Description Redirect short url to original url
+// @Tags urls
+// @Produce json
+// @Success 301 "Moved Permanently"
+// @Failure 404 {object} string
+// @Router /api/v1/shortener/redirect/{shortURL} [get]
 func Redirect(c *gin.Context) {
 	userID, _ := c.Get("userID")
 	var url models.URL
@@ -78,6 +102,14 @@ func Redirect(c *gin.Context) {
 
 // GetURLs retrieves all existing urls
 // for the logged in user
+//
+// @Summary Get all shortened urls created by user
+// @Description Retrieve all shortened urls created by each user
+// @Tags urls
+// @Produce json
+// @Success 200 {object} models.URL
+// @Failure 404 {object} string
+// @Router /api/v1/shortener/urls [get]
 func GetURLs(c *gin.Context) {
 	// Retrieve all user objects from database
 	userID, _ := c.Get("userID")
@@ -101,6 +133,15 @@ func GetURLs(c *gin.Context) {
 }
 
 // DeleteURL deletes an existing URL object from the database
+//
+// @Summary Delete a url
+// @Description Delete a url by its ID
+// @Tags urls
+// @Produce json
+// @Param id path int true "Url ID"
+// @Success 204 "No Content"
+// @Failure 404 {object} string
+// @Router /api/v1/shortener/url/{urlID} [delete]
 func DeleteURL(c *gin.Context) {
 	urlID := c.Param("urlID")
 	userID, _ := c.Get("userID")
