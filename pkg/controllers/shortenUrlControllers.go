@@ -54,12 +54,10 @@ func Shorten(c *gin.Context) {
 	}
 
 	// Return short URL
-	hostLocal := "http://localhost:8080/api/v1/"
-	// host := ""
+	host := "http://localhost:8080/api/v1/"
 	c.JSON(http.StatusOK, models.ShortenResponse{
 		Message:  "short url created successfully",
-		ShortURL: hostLocal + shortURL,
-		// ShortURL: host + shortURL,
+		ShortURL: host + shortURL,
 	})
 }
 
