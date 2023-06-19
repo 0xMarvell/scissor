@@ -18,7 +18,6 @@
                 "tags": [
                     "urls"
                 ],
-                "summary": "Say hello",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -45,9 +44,8 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "authentication"
                 ],
-                "summary": "Login to user account",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -74,9 +72,8 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "authentication"
                 ],
-                "summary": "Logout of user account",
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -102,7 +99,6 @@
                 "tags": [
                     "urls"
                 ],
-                "summary": "Redirect short url",
                 "responses": {
                     "301": {
                         "description": "Moved Permanently"
@@ -128,7 +124,6 @@
                 "tags": [
                     "urls"
                 ],
-                "summary": "Shorten url",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -154,7 +149,6 @@
                 "tags": [
                     "urls"
                 ],
-                "summary": "Delete a url",
                 "parameters": [
                     {
                         "type": "integer",
@@ -186,7 +180,6 @@
                 "tags": [
                     "urls"
                 ],
-                "summary": "Get all shortened urls created by user",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -213,9 +206,8 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "authentication"
                 ],
-                "summary": "Create a new user",
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -241,7 +233,6 @@
                 "tags": [
                     "users"
                 ],
-                "summary": "Get all users",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -267,7 +258,6 @@
                 "tags": [
                     "users"
                 ],
-                "summary": "Get a user by ID",
                 "responses": {
                     "200": {
                         "description": "OK",

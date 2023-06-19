@@ -25,7 +25,6 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
-                "summary": "Say hello",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -52,9 +51,8 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "authentication"
                 ],
-                "summary": "Login to user account",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -81,9 +79,8 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "authentication"
                 ],
-                "summary": "Logout of user account",
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -109,7 +106,6 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
-                "summary": "Redirect short url",
                 "responses": {
                     "301": {
                         "description": "Moved Permanently"
@@ -135,7 +131,6 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
-                "summary": "Shorten url",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -161,7 +156,6 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
-                "summary": "Delete a url",
                 "parameters": [
                     {
                         "type": "integer",
@@ -193,7 +187,6 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
-                "summary": "Get all shortened urls created by user",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -220,9 +213,8 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "authentication"
                 ],
-                "summary": "Create a new user",
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -248,7 +240,6 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get all users",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -274,7 +265,6 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get a user by ID",
                 "responses": {
                     "200": {
                         "description": "OK",

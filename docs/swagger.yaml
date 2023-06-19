@@ -89,7 +89,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      summary: Say hello
       tags:
       - urls
   /api/v1/login:
@@ -108,9 +107,8 @@ paths:
           description: Bad Request
           schema:
             type: string
-      summary: Login to user account
       tags:
-      - users
+      - authentication
   /api/v1/logout:
     get:
       consumes:
@@ -127,9 +125,8 @@ paths:
           description: Bad Request
           schema:
             type: string
-      summary: Logout of user account
       tags:
-      - users
+      - authentication
   /api/v1/shortener/redirect/{shortURL}:
     get:
       description: Redirect short url to original url
@@ -142,7 +139,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      summary: Redirect short url
       tags:
       - urls
   /api/v1/shortener/shorten:
@@ -161,7 +157,6 @@ paths:
           description: Bad Request
           schema:
             type: string
-      summary: Shorten url
       tags:
       - urls
   /api/v1/shortener/url/{urlID}:
@@ -182,7 +177,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      summary: Delete a url
       tags:
       - urls
   /api/v1/shortener/urls:
@@ -199,7 +193,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      summary: Get all shortened urls created by user
       tags:
       - urls
   /api/v1/signup:
@@ -218,9 +211,8 @@ paths:
           description: Bad Request
           schema:
             type: string
-      summary: Create a new user
       tags:
-      - users
+      - authentication
   /api/v1/users:
     get:
       description: Retrieve all existing user accounts
@@ -235,7 +227,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      summary: Get all users
       tags:
       - users
   /api/v1/users/profile:
@@ -252,7 +243,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      summary: Get a user by ID
       tags:
       - users
 swagger: "2.0"

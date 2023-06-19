@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// SayHello displays a simple greeting on the index page of the API
-// @Summary Say hello
+// SayHello displays simple greeting on the index page of the API
+//
 // @Description Simple greeting on index page
 // @Tags urls
 // @Produce json
@@ -27,7 +27,6 @@ func SayHello(c *gin.Context) {
 
 // Shorten takes the original url and shortens it
 //
-// @Summary Shorten url
 // @Description Get original url and created a shortened version
 // @Tags urls
 // @Accept json
@@ -78,7 +77,6 @@ func Shorten(c *gin.Context) {
 // Redirect takes the shortened URL and
 // redirects the user the the original URL
 //
-// @Summary Redirect short url
 // @Description Redirect short url to original url
 // @Tags urls
 // @Produce json
@@ -103,7 +101,6 @@ func Redirect(c *gin.Context) {
 // GetURLs retrieves all existing urls
 // for the logged in user
 //
-// @Summary Get all shortened urls created by user
 // @Description Retrieve all shortened urls created by each user
 // @Tags urls
 // @Produce json
@@ -134,7 +131,6 @@ func GetURLs(c *gin.Context) {
 
 // DeleteURL deletes an existing URL object from the database
 //
-// @Summary Delete a url
 // @Description Delete a url by its ID
 // @Tags urls
 // @Produce json

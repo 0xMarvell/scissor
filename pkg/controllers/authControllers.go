@@ -14,9 +14,8 @@ import (
 
 const JWT_SECRET = "secret"
 
-// @Summary Create a new user
 // @Description Create a new user with the provided details
-// @Tags users
+// @Tags authentication
 // @Accept json
 // @Produce json
 // @Success 201 {object} models.User
@@ -63,9 +62,8 @@ func Signup(c *gin.Context) {
 
 // Login allows existing user to login to the API
 //
-// @Summary Login to user account
 // @Description Login with user details
-// @Tags users
+// @Tags authentication
 // @Accept json
 // @Produce json
 // @Success 200 {object} string
@@ -140,9 +138,8 @@ func Login(c *gin.Context) {
 
 // Logout logs out the curret logged-in user
 //
-// @Summary Logout of user account
 // @Description Logout of user account
-// @Tags users
+// @Tags authentication
 // @Accept json
 // @Produce json
 // @Success 201 {object} string
@@ -162,7 +159,6 @@ func Logout(c *gin.Context) {
 
 // GetUsers retrieves all existing users
 //
-// @Summary Get all users
 // @Description Retrieve all existing user accounts
 // @Tags users
 // @Produce json
@@ -193,7 +189,6 @@ func GetUsers(c *gin.Context) {
 
 // GetUser retrieves an existing user's account details
 //
-// @Summary Get a user by ID
 // @Description Retrieve an existing user
 // @Tags users
 // @Produce json
