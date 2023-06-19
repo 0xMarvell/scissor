@@ -18,45 +18,43 @@ const JWT_SECRET = "secret"
 // @Tags authentication
 // @Accept json
 // @Produce json
-// @Success 201 {object} models.User
-// @Failure 400 {object} string
-// @Router /api/v1/signup [post]
+// @Param payload body models.SignupRequest true "payload"
+// @Success 201 {object} models.SignupResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Router /signup [post]
 func Signup(c *gin.Context) {
 	// Get username, password off request body
-	var signupPayload struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	if err := c.Bind(&signupPayload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read request body",
+	var s models.SignupRequest
+	if err := c.Bind(&s); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Failed to read request body",
 		})
 		return
 	}
 
 	// Hash password gotten from request body
-	hash, err := bcrypt.GenerateFromPassword([]byte(signupPayload.Password), 10)
+	hash, err := bcrypt.GenerateFromPassword([]byte(s.Password), 10)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to hash password",
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Failed to hash password",
 		})
 		return
 	}
 	// Create user object using GORM
-	user := models.User{Username: signupPayload.Username, Password: string(hash)}
+	user := models.User{Username: s.Username, Password: string(hash)}
 	result := config.DB.Create(&user)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create user: an account with that username already exists",
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Failed to create user: an account with that username already exists",
 		})
 		log.Println(result.Error)
 		return
 	}
 	// Return JSON response to confirm successful creation of user
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-		"user":    user,
-		"message": "New user was successfully created. Proceed to login",
+	c.JSON(http.StatusCreated, models.SignupResponse{
+		Success: true,
+		Message: "New user was successfully created. Proceed to login",
+		User:    user,
 	})
 }
 
@@ -66,36 +64,35 @@ func Signup(c *gin.Context) {
 // @Tags authentication
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
-// @Failure 400 {object} string
-// @Router /api/v1/login [post]
+// @Param payload body models.LoginRequest true "payload"
+// @Success 200 {object} models.LoginResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 404 {object} models.ErrorResponse
+// @Router /login [post]
 func Login(c *gin.Context) {
 	// Get needed details (username,password) off request body
-	var loginPayload struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+	var l models.LoginRequest
 
-	if c.Bind(&loginPayload) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read request body",
+	if c.Bind(&l) != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Failed to read request body",
 		})
 		return
 	}
 	// Using GORM, query database to find user details
 	var user models.User
-	config.DB.First(&user, "username = ?", loginPayload.Username)
+	config.DB.First(&user, "username = ?", l.Username)
 	if user.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "User not found. Invalid username or password",
+		c.JSON(http.StatusNotFound, models.ErrorResponse{
+			Error: "User not found. Invalid username or password",
 		})
 		return
 	}
 	// Compare password gotten off request body to user password hash stored in database
-	pwdErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginPayload.Password))
+	pwdErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(l.Password))
 	if pwdErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid email or password",
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Invalid email or password",
 		})
 		return
 	}
@@ -117,8 +114,8 @@ func Login(c *gin.Context) {
 	// Store it as an environment variable instead
 	tokenString, err := token.SignedString([]byte(JWT_SECRET))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to generate JWT token",
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Failed to generate JWT token",
 		})
 		return
 	}
@@ -130,9 +127,9 @@ func Login(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("auth_token", tokenString, maxAge, "", "", secure, httpOnly)
 	// Return JSON Response to confirm successful storage of JWT token
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "login successful",
+	c.JSON(http.StatusOK, models.LoginResponse{
+		Success: true,
+		Message: "login successful",
 	})
 }
 
@@ -140,20 +137,19 @@ func Login(c *gin.Context) {
 //
 // @Description Logout of user account
 // @Tags authentication
-// @Accept json
 // @Produce json
-// @Success 201 {object} string
-// @Failure 400 {object} string
-// @Router /api/v1/logout [get]
+// @Success 200 {object} models.LogoutResponse
+// @Failure 400 "Bad Request"
+// @Router /logout [get]
 func Logout(c *gin.Context) {
 	// Remove the cookie containing the JWT authorization token
 	//by setting its expiration time to a past value
 	var secure, httpOnly bool = false, true
 	c.SetCookie("auth_token", "", -1, "", "", secure, httpOnly)
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "logout successful",
+	c.JSON(http.StatusOK, models.LogoutResponse{
+		Success: true,
+		Message: "logout successful",
 	})
 }
 
@@ -162,9 +158,9 @@ func Logout(c *gin.Context) {
 // @Description Retrieve all existing user accounts
 // @Tags users
 // @Produce json
-// @Success 200 {object} models.User
-// @Failure 404 {object} string
-// @Router /api/v1/users [get]
+// @Success 200 {object} models.GetUsersResponse
+// @Failure 404 "Not Found"
+// @Router /users [get]
 func GetUsers(c *gin.Context) {
 	// Retrieve all user objects from database
 	var users []models.User
@@ -180,10 +176,10 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 	// Return user details as JSON response
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"count":   count,
-		"users":   users,
+	c.JSON(http.StatusOK, models.GetUsersResponse{
+		Success: true,
+		Count:   count,
+		Users:   users,
 	})
 }
 
@@ -192,15 +188,16 @@ func GetUsers(c *gin.Context) {
 // @Description Retrieve an existing user
 // @Tags users
 // @Produce json
-// @Success 200 {object} models.User
-// @Failure 404 {object} string
-// @Router /api/v1/users/profile [get]
+// @Success 200 {object} models.GetUserResponse
+// @Failure 404 "Not Found"
+// @Failure 401 {object} models.ErrorResponse
+// @Router /users/profile [get]
 func GetUser(c *gin.Context) {
 	// Retrieve user details attached to request after passing through middleware
 	user, _ := c.Get("user")
 	// Return user details as JSON response
-	c.JSON(http.StatusOK, gin.H{
-		"success":      true,
-		"user_details": user,
+	c.JSON(http.StatusOK, models.GetUserResponse{
+		Success: true,
+		User:    user,
 	})
 }

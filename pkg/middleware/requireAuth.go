@@ -20,8 +20,8 @@ func RequireAuth(c *gin.Context) {
 	// Get the cookie off the request
 	tokenString, cookieErr := c.Cookie("auth_token")
 	if cookieErr != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "authentication failed - please register / login",
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error: "authentication failed. please register / login",
 		})
 	}
 	// Decode/Validate JWT token stored in the cookie
@@ -49,8 +49,8 @@ func RequireAuth(c *gin.Context) {
 		var user models.User
 		config.DB.First(&user, claims["subject"])
 		if user.ID == 0 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Failed to find user in database",
+			c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{
+				Error: "Failed to find user in database",
 			})
 		}
 		// Attach user to the request
@@ -63,8 +63,8 @@ func RequireAuth(c *gin.Context) {
 		// Authorize user and continue
 		c.Next() // this sends the request from the middleware to the expected controller
 	} else {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "authentication failed - failed to validate JWT token",
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error: "authentication failed. failed to validate JWT token",
 		})
 	}
 

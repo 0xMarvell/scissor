@@ -16,32 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1": {
-            "get": {
-                "description": "Simple greeting on index page",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "urls"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/login": {
+        "/login": {
             "post": {
                 "description": "Login with user details",
                 "consumes": [
@@ -53,28 +28,42 @@ const docTemplate = `{
                 "tags": [
                     "authentication"
                 ],
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.LoginRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.LoginResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/logout": {
+        "/logout": {
             "get": {
                 "description": "Logout of user account",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -82,22 +71,19 @@ const docTemplate = `{
                     "authentication"
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.LogoutResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Bad Request"
                     }
                 }
             }
         },
-        "/api/v1/shortener/redirect/{shortURL}": {
+        "/shortener/redirect/{shortURL}": {
             "get": {
                 "description": "Redirect short url to original url",
                 "produces": [
@@ -106,6 +92,15 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short URL",
+                        "name": "shortURL",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "301": {
                         "description": "Moved Permanently"
@@ -113,13 +108,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/shortener/shorten": {
+        "/shortener/shorten": {
             "post": {
                 "description": "Get original url and created a shortened version",
                 "consumes": [
@@ -131,23 +126,34 @@ const docTemplate = `{
                 "tags": [
                     "urls"
                 ],
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ShortenURLRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ShortenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/shortener/url/{urlID}": {
+        "/shortener/url/{urlID}": {
             "delete": {
                 "description": "Delete a url by its ID",
                 "produces": [
@@ -160,7 +166,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Url ID",
-                        "name": "id",
+                        "name": "urlID",
                         "in": "path",
                         "required": true
                     }
@@ -172,13 +178,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/shortener/urls": {
+        "/shortener/urls": {
             "get": {
                 "description": "Retrieve all shortened urls created by each user",
                 "produces": [
@@ -191,19 +197,16 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.URL"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.GetURLsResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Not Found"
                     }
                 }
             }
         },
-        "/api/v1/signup": {
+        "/signup": {
             "post": {
                 "description": "Create a new user with the provided details",
                 "consumes": [
@@ -215,23 +218,34 @@ const docTemplate = `{
                 "tags": [
                     "authentication"
                 ],
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.SignupRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.User"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.SignupResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/users": {
+        "/users": {
             "get": {
                 "description": "Retrieve all existing user accounts",
                 "produces": [
@@ -244,19 +258,16 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.User"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.GetUsersResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Not Found"
                     }
                 }
             }
         },
-        "/api/v1/users/profile": {
+        "/users/profile": {
             "get": {
                 "description": "Retrieve an existing user",
                 "produces": [
@@ -269,20 +280,162 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.User"
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.GetUserResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Not Found"
                     }
                 }
             }
         }
     },
     "definitions": {
+        "github_com_0xMarvell_scissor_pkg_models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.GetURLsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "urls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.URL"
+                    }
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.GetUserResponse": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean"
+                },
+                "user": {}
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.GetUsersResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.User"
+                    }
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "hero108"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "linchung"
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "login successful"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.LogoutResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": " logout successful"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.ShortenResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "short url created successfully"
+                },
+                "short_url": {
+                    "type": "string",
+                    "example": "http://localhost:8080/api/v1/8KKoJCy"
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.ShortenURLRequest": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://google.com"
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.SignupRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "hero108"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "linchung"
+                }
+            }
+        },
+        "github_com_0xMarvell_scissor_pkg_models.SignupResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "user": {
+                    "$ref": "#/definitions/github_com_0xMarvell_scissor_pkg_models.User"
+                }
+            }
+        },
         "github_com_0xMarvell_scissor_pkg_models.URL": {
             "type": "object",
             "properties": {

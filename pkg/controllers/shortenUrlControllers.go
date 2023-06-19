@@ -11,41 +11,28 @@ import (
 	"gorm.io/gorm"
 )
 
-// SayHello displays simple greeting on the index page of the API
-//
-// @Description Simple greeting on index page
-// @Tags urls
-// @Produce json
-// @Success 200 {object} string
-// @Failure 404 {object} string
-// @Router /api/v1 [get]
-func SayHello(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"msg": "Hello and welcome to scissor! shorten urls with ease!",
-	})
-}
-
 // Shorten takes the original url and shortens it
 //
 // @Description Get original url and created a shortened version
 // @Tags urls
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
-// @Failure 400 {object} string
-// @Router /api/v1/shortener/shorten [post]
+// @Param payload body models.ShortenURLRequest true "payload"
+// @Success 200 {object} models.ShortenResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failue 500 {object} models.ErrorResponse
+// @Router /shortener/shorten [post]
 func Shorten(c *gin.Context) {
-	var urlPayload struct {
-		URL string `json:"url"`
-	}
-	if err := c.ShouldBindJSON(&urlPayload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+	var u models.ShortenURLRequest
+
+	if err := c.ShouldBindJSON(&u); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Bad request"})
 		return
 	}
 
 	// // Validate the URL
-	if !utils.IsValidURL(urlPayload.URL) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid URL"})
+	if !utils.IsValidURL(u.URL) {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid URL"})
 		return
 	}
 
@@ -53,24 +40,26 @@ func Shorten(c *gin.Context) {
 	userID, _ := c.Get("userID")
 
 	// Generate short link
-	shortURL := utils.GenerateShortLink(urlPayload.URL, fmt.Sprintf("%v", userID))
+	shortURL := utils.GenerateShortLink(u.URL, fmt.Sprintf("%v", userID))
 
 	// Save URL object to database
 	result := config.DB.Create(&models.URL{
-		OriginalURL:  urlPayload.URL,
+		OriginalURL:  u.URL,
 		ShortenedURL: shortURL,
 		UserID:       utils.UserIDToUint(userID),
 	})
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Database error"})
 		return
 	}
 
 	// Return short URL
-	host := "http://localhost:8080/"
-	c.JSON(http.StatusOK, gin.H{
-		"message":   "short url created successfully",
-		"short_url": host + shortURL,
+	hostLocal := "http://localhost:8080/api/v1/"
+	// host := ""
+	c.JSON(http.StatusOK, models.ShortenResponse{
+		Message:  "short url created successfully",
+		ShortURL: hostLocal + shortURL,
+		// ShortURL: host + shortURL,
 	})
 }
 
@@ -80,18 +69,20 @@ func Shorten(c *gin.Context) {
 // @Description Redirect short url to original url
 // @Tags urls
 // @Produce json
+// @Param shortURL path string true "Short URL"
 // @Success 301 "Moved Permanently"
-// @Failure 404 {object} string
-// @Router /api/v1/shortener/redirect/{shortURL} [get]
+// @Failure 404 {object} models.ErrorResponse
+// @Failue 500 {object} models.ErrorResponse
+// @Router /shortener/redirect/{shortURL} [get]
 func Redirect(c *gin.Context) {
 	userID, _ := c.Get("userID")
 	var url models.URL
 	result := config.DB.Where("user_id = ?", userID).First(&url)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "URL not found"})
+			c.JSON(http.StatusNotFound, models.ErrorResponse{Error: "URL not found"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Database error"})
 		}
 		return
 	}
@@ -104,9 +95,10 @@ func Redirect(c *gin.Context) {
 // @Description Retrieve all shortened urls created by each user
 // @Tags urls
 // @Produce json
-// @Success 200 {object} models.URL
-// @Failure 404 {object} string
-// @Router /api/v1/shortener/urls [get]
+// @Success 200 {object} models.GetURLsResponse
+// @Failure 404 "Not Found"
+// @Failue 500 {object} models.ErrorResponse
+// @Router /shortener/urls [get]
 func GetURLs(c *gin.Context) {
 	// Retrieve all user objects from database
 	userID, _ := c.Get("userID")
@@ -116,16 +108,14 @@ func GetURLs(c *gin.Context) {
 	var count int64
 	result := config.DB.Model(&models.URL{}).Where("user_id = ?", userID).Count(&count)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to get count",
-		})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "failed to get count"})
 		return
 	}
 	// Return user details as JSON response
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"count":   count,
-		"urls":    urls,
+	c.JSON(http.StatusOK, models.GetURLsResponse{
+		Success: true,
+		Count:   count,
+		URLs:    urls,
 	})
 }
 
@@ -134,10 +124,11 @@ func GetURLs(c *gin.Context) {
 // @Description Delete a url by its ID
 // @Tags urls
 // @Produce json
-// @Param id path int true "Url ID"
+// @Param urlID path int true "Url ID"
 // @Success 204 "No Content"
-// @Failure 404 {object} string
-// @Router /api/v1/shortener/url/{urlID} [delete]
+// @Failure 404 {object} models.ErrorResponse
+// @Failue 500 {object} models.ErrorResponse
+// @Router /shortener/url/{urlID} [delete]
 func DeleteURL(c *gin.Context) {
 	urlID := c.Param("urlID")
 	userID, _ := c.Get("userID")
@@ -146,15 +137,14 @@ func DeleteURL(c *gin.Context) {
 	config.DB.Where("id = ? AND user_id = ?", urlID, userID).First(&url)
 
 	if !urlExists(urlID) {
-		c.IndentedJSON(http.StatusNotFound, gin.H{
-			"success": false,
-			"error":   fmt.Sprintf("URL object with id {%v} does not exist", urlID),
+		c.IndentedJSON(http.StatusNotFound, models.ErrorResponse{
+			Error: fmt.Sprintf("URL object with id {%v} does not exist", urlID),
 		})
 		return
 	}
 	if err := config.DB.Unscoped().Delete(&url).Error; err != nil {
 		// Handle deletion error
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete URL - you cannot delete a URL you did not create"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "failed to delete URL - you cannot delete a URL you did not create"})
 		return
 	}
 

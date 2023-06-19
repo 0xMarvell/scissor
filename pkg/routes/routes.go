@@ -17,8 +17,6 @@ func RegisterRoutes(r *gin.Engine) {
 	// Authentication routes
 	auth := r.Group("/api/v1")
 	{
-		// Index page...a simple greeting
-		auth.GET("", controllers.SayHello) // won't require authentication
 		auth.POST("/signup", controllers.Signup)
 		auth.POST("/login", controllers.Login)
 		auth.GET("/logout", controllers.Logout)

@@ -1,5 +1,98 @@
 basePath: /api/v1
 definitions:
+  github_com_0xMarvell_scissor_pkg_models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.GetURLsResponse:
+    properties:
+      count:
+        type: integer
+      success:
+        type: boolean
+      urls:
+        items:
+          $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.URL'
+        type: array
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.GetUserResponse:
+    properties:
+      success:
+        type: boolean
+      user: {}
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.GetUsersResponse:
+    properties:
+      count:
+        type: integer
+      success:
+        type: boolean
+      users:
+        items:
+          $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+        type: array
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.LoginRequest:
+    properties:
+      password:
+        example: hero108
+        type: string
+      username:
+        example: linchung
+        type: string
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.LoginResponse:
+    properties:
+      message:
+        example: login successful
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.LogoutResponse:
+    properties:
+      message:
+        example: ' logout successful'
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.ShortenResponse:
+    properties:
+      message:
+        example: short url created successfully
+        type: string
+      short_url:
+        example: http://localhost:8080/api/v1/8KKoJCy
+        type: string
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.ShortenURLRequest:
+    properties:
+      url:
+        example: https://google.com
+        type: string
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.SignupRequest:
+    properties:
+      password:
+        example: hero108
+        type: string
+      username:
+        example: linchung
+        type: string
+    type: object
+  github_com_0xMarvell_scissor_pkg_models.SignupResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      user:
+        $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+    type: object
   github_com_0xMarvell_scissor_pkg_models.URL:
     properties:
       createdAt:
@@ -75,61 +168,58 @@ info:
   title: Scissor API
   version: "1.0"
 paths:
-  /api/v1:
-    get:
-      description: Simple greeting on index page
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "404":
-          description: Not Found
-          schema:
-            type: string
-      tags:
-      - urls
-  /api/v1/login:
+  /login:
     post:
       consumes:
       - application/json
       description: Login with user details
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.LoginResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
       tags:
       - authentication
-  /api/v1/logout:
+  /logout:
     get:
-      consumes:
-      - application/json
       description: Logout of user account
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.LogoutResponse'
         "400":
           description: Bad Request
-          schema:
-            type: string
       tags:
       - authentication
-  /api/v1/shortener/redirect/{shortURL}:
+  /shortener/redirect/{shortURL}:
     get:
       description: Redirect short url to original url
+      parameters:
+      - description: Short URL
+        in: path
+        name: shortURL
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -138,34 +228,41 @@ paths:
         "404":
           description: Not Found
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
       tags:
       - urls
-  /api/v1/shortener/shorten:
+  /shortener/shorten:
     post:
       consumes:
       - application/json
       description: Get original url and created a shortened version
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ShortenURLRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ShortenResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
       tags:
       - urls
-  /api/v1/shortener/url/{urlID}:
+  /shortener/url/{urlID}:
     delete:
       description: Delete a url by its ID
       parameters:
       - description: Url ID
         in: path
-        name: id
+        name: urlID
         required: true
         type: integer
       produces:
@@ -176,10 +273,10 @@ paths:
         "404":
           description: Not Found
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
       tags:
       - urls
-  /api/v1/shortener/urls:
+  /shortener/urls:
     get:
       description: Retrieve all shortened urls created by each user
       produces:
@@ -188,32 +285,37 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.URL'
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.GetURLsResponse'
         "404":
           description: Not Found
-          schema:
-            type: string
       tags:
       - urls
-  /api/v1/signup:
+  /signup:
     post:
       consumes:
       - application/json
       description: Create a new user with the provided details
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.SignupRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.SignupResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
       tags:
       - authentication
-  /api/v1/users:
+  /users:
     get:
       description: Retrieve all existing user accounts
       produces:
@@ -222,14 +324,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.GetUsersResponse'
         "404":
           description: Not Found
-          schema:
-            type: string
       tags:
       - users
-  /api/v1/users/profile:
+  /users/profile:
     get:
       description: Retrieve an existing user
       produces:
@@ -238,11 +338,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.User'
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.GetUserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_0xMarvell_scissor_pkg_models.ErrorResponse'
         "404":
           description: Not Found
-          schema:
-            type: string
       tags:
       - users
 swagger: "2.0"
