@@ -12,7 +12,7 @@ import (
 // RegisterRoutes handles all routing for the API
 func RegisterRoutes(r *gin.Engine) {
 	// Swagger Docs
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Authentication routes
 	auth := r.Group("/api/v1")
