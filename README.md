@@ -4,7 +4,7 @@ Welcome to Scissor, the cutting-edge URL shortening API service! With Scissor, y
 
 ## Docs
 
-The API documentation can be found [here](google.com)
+The API documentation can be found at `localhost:8080/docs/index.html`
 
 ## Run Scissor Locally
 
@@ -12,5 +12,5 @@ The API documentation can be found [here](google.com)
 - Build Docker service
 
     ```bash
-        docker compose up
+    docker compose up
     ```
