@@ -11,6 +11,9 @@ import (
 
 // RegisterRoutes handles all routing for the API
 func RegisterRoutes(r *gin.Engine) {
+	//Index page
+	r.GET("", controllers.SayHello)
+
 	// Swagger Docs
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

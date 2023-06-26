@@ -11,6 +11,12 @@ import (
 	"gorm.io/gorm"
 )
 
+func SayHello(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Hello and welcome to Scissor! shorten URLs in the blink of an eye!",
+	})
+}
+
 // Shorten takes the original url and shortens it
 //
 // @Description Get original url and created a shortened version
@@ -54,9 +60,11 @@ func Shorten(c *gin.Context) {
 	}
 
 	// Return short URL
-	host := "http://localhost:8080/api/v1/"
+	// hostLocal := "http://localhost:8080/api/v1/" // for development
+	host := "https://sci-ssor.onrender.com/"
 	c.JSON(http.StatusOK, models.ShortenResponse{
-		Message:  "short url created successfully",
+		Message: "short url created successfully",
+		// ShortURL: hostLocal + shortURL, // for development
 		ShortURL: host + shortURL,
 	})
 }
