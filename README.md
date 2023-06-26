@@ -9,7 +9,7 @@ The API documentation can be found [here](https://sci-ssor.onrender.com/docs/ind
 ## Run Scissor Locally
 
 - Install [Docker and Docker Compose](https://docs.docker.com/engine/install/)
-- In `pkg/config/database.go`, uncomment line `18` and comment out line `19`
+- In `pkg/config/database.go`, uncomment line `19` and comment out line `20`
 - In `pkg/controllers/shortenControllers.go`, uncomment lines `63` and `67` and comment out lines `64` and `68`.
 - Build Docker service
 
