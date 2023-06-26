@@ -17,7 +17,7 @@ func init() {
 // @title Scissor API
 // @description Shorten urls for users
 // @version 1.0
-// @host https://sci-ssor.onrender.com
+// @host sci-ssor.onrender.com
 // @BasePath /api/v1
 func main() {
 	r := gin.Default()

@@ -161,7 +161,7 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
-host: https://sci-ssor.onrender.com
+host: sci-ssor.onrender.com
 info:
   contact: {}
   description: Shorten urls for users

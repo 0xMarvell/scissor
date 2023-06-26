@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "https://sci-ssor.onrender.com",
+    "host": "sci-ssor.onrender.com",
     "basePath": "/api/v1",
     "paths": {
         "/login": {

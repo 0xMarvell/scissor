@@ -4,11 +4,13 @@ Welcome to Scissor, the cutting-edge URL shortening API service! With Scissor, y
 
 ## Docs
 
-The API documentation can be found at `localhost:8080/docs/index.html`
+The API documentation can be found [here](https://sci-ssor.onrender.com/docs/index.html)
 
 ## Run Scissor Locally
 
 - Install [Docker and Docker Compose](https://docs.docker.com/engine/install/)
+- In `pkg/config/database.go`, uncomment line `18` and comment out line `19`
+- In `pkg/controllers/shortenControllers.go`, uncomment lines `63` and `67` and comment out lines `64` and `68`.
 - Build Docker service
 
     ```bash
